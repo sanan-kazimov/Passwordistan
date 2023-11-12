@@ -1,5 +1,6 @@
 from tkinter import *
-from tkinter.messagebox import showwarning
+from tkinter.messagebox import *
+from random import shuffle, choice
 
 PADDING_WINDOW_X = 50
 PADDING_WINDOW_y = 50
@@ -15,10 +16,41 @@ TXT_COLOR = "#14415b"
 ENTRY_BORDER_COLOR_SELECTED = "#ee787a"
 ENTRY_BORDER_COLOR_IDLE = "#fbdb54"
 count_number = 0
+LETTERS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+           'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+           'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+NUMBERS = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+SYMBOLS = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
+NUM_OF_LETTERS_IN_PASSWORD = 8
+NUM_OF_NUMBERS_IN_PASSWORD = 4
+NUM_OF_SYMBOLS_IN_PASSWORD = 4
+
 
 # -------------------- GENERATE PASSWORD ------------------------- #
 def generate_password():
-    pass
+    row_password = []
+    generated_password = ""
+
+    if len(ent_password.get()) == 0:
+        for _ in range(0, NUM_OF_LETTERS_IN_PASSWORD):
+            row_password.append(choice(LETTERS))
+
+        for _ in range(0, NUM_OF_NUMBERS_IN_PASSWORD):
+            row_password.append(choice(NUMBERS))
+
+        for _ in range(0, NUM_OF_SYMBOLS_IN_PASSWORD):
+            row_password.append(choice(SYMBOLS))
+
+        shuffle(row_password)
+
+        for i in row_password:
+            generated_password += str(i)
+
+        ent_password.insert(0, generated_password)
+    else:
+        # clear entry and regenerate a new password
+        ent_password.delete(0, END)
+        generate_password()
 
 
 # ----------------------  SAVE PASSWORD ---------------------------- #
@@ -31,14 +63,17 @@ def save_data():
         global count_number
         count_number += 1
 
-        with open("db.txt", mode="a") as db_file:
-            db_file.write(f"{count_number}) Platform: {website} | E-mail: {email} | Password: {pswd}\n")
-            ent_website.delete(0, END)
-            ent_email.delete(0, END)
-            ent_password.delete(0, END)
-    else:
-        showwarning("WARNING", "Please, fill all empty areas")
+        is_ok = askyesno("Validation", f"Platform: {website}\nE-mail: {email}\nPassword: {pswd}\n Do you want to save?")
+        if is_ok:
+            with open("db.txt", mode="a") as db_file:
+                db_file.write(f"{count_number}) Platform: {website} | E-mail: {email} | Password: {pswd}\n")
+                ent_website.delete(0, END)
+                ent_email.delete(0, END)
+                ent_password.delete(0, END)
 
+            showinfo("Confirmation", "Successfully saved")
+    else:
+        showwarning("W A R N I N G", "Please, fill all empty areas")
 
 
 # ------------------------  UI SETUP ------------------------------- #
@@ -105,7 +140,7 @@ ent_website = Entry(
     foreground=TXT_COLOR
 )
 ent_website.focus()
-ent_website.grid(column=1, row=1, columnspan=2, sticky=E+W, pady=PADDING_NS)
+ent_website.grid(column=1, row=1, columnspan=2, sticky=E + W, pady=PADDING_NS)
 #  > email
 ent_email = Entry(
     highlightcolor=ENTRY_BORDER_COLOR_SELECTED,
@@ -114,7 +149,7 @@ ent_email = Entry(
     foreground=TXT_COLOR
 )
 # ent_email.insert(0, "@gmail.com")
-ent_email.grid(column=1, row=2, columnspan=2, sticky=E+W, pady=PADDING_NS)
+ent_email.grid(column=1, row=2, columnspan=2, sticky=E + W, pady=PADDING_NS)
 #  > password
 ent_password = Entry(
     highlightcolor=ENTRY_BORDER_COLOR_SELECTED,
@@ -144,6 +179,6 @@ btn_save = Button(
     pady=PADDING_NS,
     command=save_data
 )
-btn_save.grid(column=1, row=4, columnspan=2, sticky=E+W)
+btn_save.grid(column=1, row=4, columnspan=2, sticky=E + W)
 
 window.mainloop()
