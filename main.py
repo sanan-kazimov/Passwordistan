@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter.messagebox import *
 from random import shuffle, choice
+import pyperclip
 
 PADDING_WINDOW_X = 50
 PADDING_WINDOW_y = 50
@@ -28,25 +29,17 @@ NUM_OF_SYMBOLS_IN_PASSWORD = 4
 
 # ----------------------------------------------------------------------- GENERATE PASSWORD ------------------------- #
 def generate_password():
-    row_password = []
-    generated_password = ""
-
     if len(ent_password.get()) == 0:
-        for _ in range(0, NUM_OF_LETTERS_IN_PASSWORD):
-            row_password.append(choice(LETTERS))
-
-        for _ in range(0, NUM_OF_NUMBERS_IN_PASSWORD):
-            row_password.append(choice(NUMBERS))
-
-        for _ in range(0, NUM_OF_SYMBOLS_IN_PASSWORD):
-            row_password.append(choice(SYMBOLS))
+        row_password = [choice(LETTERS) for _ in range(0, NUM_OF_LETTERS_IN_PASSWORD)]
+        row_password += [choice(NUMBERS) for _ in range(0, NUM_OF_NUMBERS_IN_PASSWORD)]
+        row_password += [choice(SYMBOLS) for _ in range(0, NUM_OF_SYMBOLS_IN_PASSWORD)]
 
         shuffle(row_password)
 
-        for i in row_password:
-            generated_password += str(i)
+        generated_password = "".join([str(item) for item in row_password])
 
         ent_password.insert(0, generated_password)
+        pyperclip.copy(generated_password)
     else:
         # clear entry and regenerate a new password
         ent_password.delete(0, END)
