@@ -26,7 +26,7 @@ NUM_OF_NUMBERS_IN_PASSWORD = 4
 NUM_OF_SYMBOLS_IN_PASSWORD = 4
 
 
-# -------------------- GENERATE PASSWORD ------------------------- #
+# ----------------------------------------------------------------------- GENERATE PASSWORD ------------------------- #
 def generate_password():
     row_password = []
     generated_password = ""
@@ -53,7 +53,7 @@ def generate_password():
         generate_password()
 
 
-# ----------------------  SAVE PASSWORD ---------------------------- #
+# -----------------------------------------------------------------------  SAVE PASSWORD ---------------------------- #
 def save_data():
     website = ent_website.get()  # Returns the entry's current text as a string.
     email = ent_email.get()
@@ -63,8 +63,12 @@ def save_data():
         global count_number
         count_number += 1
 
-        is_ok = askyesno("Validation", f"Platform: {website}\nE-mail: {email}\nPassword: {pswd}\n Do you want to save?")
-        if is_ok:
+        is_confirmed = askyesno(
+            "Validation",
+            f"Platform: {website}\nE-mail: {email}\nPassword: {pswd}\n Do you want to save?"
+        )
+
+        if is_confirmed:
             with open("db.txt", mode="a") as db_file:
                 db_file.write(f"{count_number}) Platform: {website} | E-mail: {email} | Password: {pswd}\n")
                 ent_website.delete(0, END)
@@ -76,7 +80,7 @@ def save_data():
         showwarning("W A R N I N G", "Please, fill all empty areas")
 
 
-# ------------------------  UI SETUP ------------------------------- #
+# -------------------------------------------------------------------------  UI SETUP ------------------------------- #
 # WINDOW
 window = Tk()
 window.title("Passwordistan")
