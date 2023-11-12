@@ -10,7 +10,7 @@ PADDING_EW = 10
 PADDING_NS = 1
 FONT = ("Courier", 7)
 FONT_BTN = ("Courier", 7, "bold")
-BUTTON_HEIGHT = 1
+BACKGROUND_COLOR = "white"
 BTN_BG_COLOR = "#a0e4f8"
 BLUE = "#6db1cf"
 TXT_COLOR = "#14415b"
@@ -80,14 +80,14 @@ window.title("Passwordistan")
 window.config(
     padx=PADDING_WINDOW_X,
     pady=PADDING_WINDOW_y,
-    background="white"
+    background=BACKGROUND_COLOR
 )
 
 # CANVAS
 canvas = Canvas(
     width=250,
     height=200,
-    background="white",
+    background=BACKGROUND_COLOR,
     highlightthickness=0
 )
 
@@ -101,7 +101,7 @@ canvas.grid(column=0, row=0, columnspan=3, pady=PADDING_LOGO)
 lbl_website = Label(
     text="Website",
     font=FONT,
-    background="white",
+    background=BACKGROUND_COLOR,
     foreground=TXT_COLOR,
     padx=PADDING_EW,
     pady=PADDING_NS,
@@ -111,7 +111,7 @@ lbl_website.grid(column=0, row=1)
 lbl_email = Label(
     text="Email / Username",
     font=FONT,
-    background="white",
+    background=BACKGROUND_COLOR,
     foreground=TXT_COLOR,
     padx=PADDING_EW,
     pady=PADDING_NS,
@@ -121,7 +121,7 @@ lbl_email.grid(column=0, row=2)
 lbl_password = Label(
     text="Password",
     font=FONT,
-    background="white",
+    background=BACKGROUND_COLOR,
     foreground=TXT_COLOR,
     padx=PADDING_EW,
     pady=PADDING_NS,
