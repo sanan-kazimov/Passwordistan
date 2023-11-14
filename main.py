@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter.messagebox import *
 from random import shuffle, choice
 import pyperclip
+import json
 
 PADDING_WINDOW_X = 50
 PADDING_WINDOW_y = 50
@@ -48,8 +49,8 @@ def generate_password():
 
 # -----------------------------------------------------------------------  SAVE PASSWORD ---------------------------- #
 def save_data():
-    website = ent_website.get()  # Returns the entry's current text as a string.
-    email = ent_email.get()
+    website = ent_website.get().title()  # Returns the entry's current text as a string.
+    email = ent_email.get().lower()
     pswd = ent_password.get()
 
     if website != "" and email != "" and pswd != "":
@@ -62,8 +63,31 @@ def save_data():
         )
 
         if is_confirmed:
-            with open("db.txt", mode="a") as db_file:
-                db_file.write(f"{count_number}) Platform: {website} | E-mail: {email} | Password: {pswd}\n")
+            entered_data = {
+                website: {
+                    "email": email,
+                    "password": pswd
+                }
+            }
+            try:  # try to OPEN and READ the JSON file (if it does not exist, it'll through the ERROR)
+                with open("db.json", "r") as db_file:
+                    # LOAD json file to READ data in it
+                    data_in_db_file = json.load(db_file)
+                    # TODO - ERROR - if the website exist in db, but yo wanna add 2nd username and password
+            except FileNotFoundError:  # catch that error and UPDATE the json file with new data
+                with open("db.json", mode="w") as db_file:
+                    # WRITE (dump) the updated data into JSON database file
+                    json.dump(entered_data, db_file, indent=4)
+                    #    dump(DICTIONARY which should be converted to JSON object, FILE opened in write or append mode)
+            else:  # if file exist, WRITE the UPDATED data into JSON file
+                # UPDATE the loaded json file and add the new data
+                data_in_db_file.update(entered_data)
+
+                with open("db.json", mode="w") as db_file:
+                    # WRITE (dump) the updated data into JSON database file
+                    json.dump(data_in_db_file, db_file, indent=4)
+                    #    dump(DICTIONARY which should be converted to JSON object, FILE opened in write or append mode)
+            finally:
                 ent_website.delete(0, END)
                 ent_email.delete(0, END)
                 ent_password.delete(0, END)
@@ -71,6 +95,37 @@ def save_data():
             showinfo("Confirmation", "Successfully saved")
     else:
         showwarning("W A R N I N G", "Please, fill all empty areas")
+
+
+# ----------------------------------------------------------------------- SEARCH DATABASE --------------------------- #
+def search_database():
+    website = ent_website.get().title()  # read and find matching key (which is website name)
+    # open json data in READ MODE
+    try:
+        with open("db.json", mode="r") as db_file:
+            database = json.load(db_file)  # json.load() returns Python DICTIONARY
+    except FileNotFoundError:
+        showinfo("ATTENTION", "Database is empty")
+    else:
+        if website in database:
+            email = database[website]['email']
+            password = database[website]['password']
+
+            pyperclip.copy(password)  # copy password to clipboard
+
+            is_ok_clicked = showinfo(
+                f"{website}",
+                f"E-mail: {email}\nPassword: {password}"
+            )
+            if is_ok_clicked:
+                ent_website.delete(0, END)
+                ent_email.delete(0, END)
+                ent_password.delete(0, END)
+        else:
+            if website == "":
+                showinfo("ATTENTION", "Please, fill all empty areas")
+            else:
+                showinfo("ATTENTION", f"No record about '{website}' in database")
 
 
 # -------------------------------------------------------------------------  UI SETUP ------------------------------- #
@@ -134,10 +189,11 @@ ent_website = Entry(
     highlightcolor=ENTRY_BORDER_COLOR_SELECTED,
     highlightthickness=2,
     highlightbackground=ENTRY_BORDER_COLOR_IDLE,
-    foreground=TXT_COLOR
+    foreground=TXT_COLOR,
+    width=25
 )
 ent_website.focus()
-ent_website.grid(column=1, row=1, columnspan=2, sticky=E + W, pady=PADDING_NS)
+ent_website.grid(column=1, row=1, pady=PADDING_NS)
 #  > email
 ent_email = Entry(
     highlightcolor=ENTRY_BORDER_COLOR_SELECTED,
@@ -152,7 +208,8 @@ ent_password = Entry(
     highlightcolor=ENTRY_BORDER_COLOR_SELECTED,
     highlightthickness=2,
     highlightbackground=ENTRY_BORDER_COLOR_IDLE,
-    foreground=TXT_COLOR
+    foreground=TXT_COLOR,
+    width=25
 )
 ent_password.grid(column=1, row=3, pady=PADDING_NS)
 
@@ -177,5 +234,15 @@ btn_save = Button(
     command=save_data
 )
 btn_save.grid(column=1, row=4, columnspan=2, sticky=E + W)
+
+btn_search = Button(
+    text="Search Password",
+    font=FONT_BTN,
+    background=BTN_BG_COLOR,
+    foreground=TXT_COLOR,
+    pady=PADDING_NS,
+    command=search_database
+)
+btn_search.grid(column=2, row=1, sticky=E + W)
 
 window.mainloop()
