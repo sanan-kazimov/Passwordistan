@@ -73,7 +73,6 @@ def save_data():
                 with open("db.json", "r") as db_file:
                     # LOAD json file to READ data in it
                     data_in_db_file = json.load(db_file)
-                    # TODO - ERROR - if the website exist in db, but yo wanna add 2nd username and password
             except FileNotFoundError:  # catch that error and UPDATE the json file with new data
                 with open("db.json", mode="w") as db_file:
                     # WRITE (dump) the updated data into JSON database file
